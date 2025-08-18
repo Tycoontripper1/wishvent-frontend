@@ -3,29 +3,9 @@
 import { useEffect, useRef } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import Image from "next/image"
+import { steps } from "@/constants/data"
+import content from "@/assets/images/Content.png"
 
-const steps = [
-  {
-    number: 1,
-    title: "Register and create your wishlist",
-    isHighlighted: false,
-  },
-  {
-    number: 2,
-    title: "Customize and select items from store",
-    isHighlighted: false,
-  },
-  {
-    number: 3,
-    title: "Fill your details and share link with friends",
-    isHighlighted: true,
-  },
-  {
-    number: 4,
-    title: "Receive your gifts with joy!!",
-    isHighlighted: true,
-  },
-]
 
 const StepItem = ({ step, index, isLast }: { step: any; index: number; isLast: boolean }) => {
   const stepRef = useRef<HTMLDivElement>(null)
@@ -61,7 +41,7 @@ const StepItem = ({ step, index, isLast }: { step: any; index: number; isLast: b
           className={`w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center text-lg md:text-xl font-bold transition-all duration-500 ${
             step.isHighlighted
               ? "bg-white text-primaryColor shadow-lg"
-              : "bg-purple-500 text-white border-2 border-purple-400"
+              : "bg-[#821890]/70 text-white border-2 border-purple-400"
           }`}
         >
           {step.number}
@@ -119,7 +99,7 @@ export default function HowItWorksSection() {
         {/* Header */}
         <div className="text-center mb-12 md:mb-16 animate-slide-down font-zilla">
           <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-[#9F1AB1] mb-4">How It Works</h2>
-          <h3 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-6 leading-tight">
+          <h3 className="text-2xl md:text-3xl lg:text-4xl  text-white mb-6 leading-tight">
             Few Easy Steps to Create a Wishlist
           </h3>
           <p className="text-base md:text-lg text-white/90 max-w-2xl mx-auto leading-relaxed">
@@ -149,39 +129,14 @@ export default function HowItWorksSection() {
               <Card className="bg-white shadow-2xl border-0 overflow-hidden">
                 <CardContent className="p-4 md:p-6">
                   {/* Success Messages */}
-                  <div className="space-y-4 mb-6">
-                    <div className="flex items-center space-x-3 p-3 bg-green-50 rounded-lg border border-green-200">
-                      <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
-                        <span className="text-white text-sm">✓</span>
-                      </div>
-                      <span className="text-green-800 text-sm font-medium">
-                        Yeay! Your account has been registered.
-                      </span>
-                    </div>
-
-                    <div className="flex items-center space-x-3 p-3 bg-green-50 rounded-lg border border-green-200">
-                      <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
-                        <span className="text-white text-sm">✓</span>
-                      </div>
-                      <span className="text-green-800 text-sm font-medium">Your wishlist has been created.</span>
-                    </div>
-
-                    <div className="flex items-center space-x-3 p-3 bg-green-50 rounded-lg border border-green-200">
-                      <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
-                        <span className="text-white text-sm">✓</span>
-                      </div>
-                      <span className="text-green-800 text-sm font-medium">
-                        Done, you can share link and receive gifts.
-                      </span>
-                    </div>
-                  </div>
+                 
 
                   {/* App Interface Mockup */}
                   <div className="relative">
                     <div className="bg-gray-100 rounded-lg p-4 min-h-[300px] overflow-hidden">
                       <Image
-                        src="/images/how-it-works-mockup.png"
-                        alt="WishVent App Interface showing wishlist creation process"
+                        src={content}
+                        alt="how-image"
                         width={400}
                         height={600}
                         className="w-full h-auto rounded-lg"

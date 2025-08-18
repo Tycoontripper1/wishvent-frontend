@@ -18,6 +18,7 @@ const config: Config = {
   			foreground: 'hsl(var(--foreground))',
 			primaryColor:"#821890",
 			lightPurple:"#9F1AB1",
+			// purple:"#6F1877",
   			card: {
   				DEFAULT: 'hsl(var(--card))',
   				foreground: 'hsl(var(--card-foreground))'

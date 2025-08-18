@@ -48,15 +48,10 @@ const CategoryCard = ({ category, index }: { category: any; index: number }) => 
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
 
         {/* Purple overlay banner */}
-        <div className="absolute bottom-0 left-0 right-0 bg-[#821890] backdrop-blur-sm">
+        <div className="absolute bottom-0 left-0 right-0 bg-[#fff]/50 backdrop-blur-sm">
           <div className="p-4">
-            <h3 className="text-xl md:text-2xl font-bold text-white">{category.title}</h3>
+            <h3 className="text-xl md:text-2xl font-bold text-[#9F1AB1]">{category.title}</h3>
           </div>
-        </div>
-
-        {/* Yellow arc decoration */}
-        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-16 h-8 overflow-hidden">
-          <div className="w-32 h-16 bg-yellow-400 rounded-t-full transform -translate-y-8 opacity-60 animate-pulse"></div>
         </div>
       </div>
     </div>
@@ -108,17 +103,10 @@ export default function CategoriesSection() {
           <Button
             variant="outline"
             size="lg"
-            className="border-purple-300 text-purple-700 hover:bg-purple-50 hover:border-purple-400 px-12 py-6 text-lg font-medium rounded-lg shadow-sm hover:shadow-md transition-all duration-300 transform hover:scale-105"
+            className="border-purple-300 text-primaryColor hover:bg-purple-50 hover:border-purple-400 px-12 py-6 text-lg font-medium rounded-lg shadow-sm hover:shadow-md transition-all duration-300 transform hover:scale-105"
           >
             See More
           </Button>
-        </div>
-
-        {/* Yellow Arc at Bottom */}
-        <div className="mt-16 flex justify-center">
-          <div className="w-32 h-16 overflow-hidden">
-            <div className="w-64 h-32 bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-300 rounded-t-full transform -translate-y-16 animate-bounce-slow opacity-70"></div>
-          </div>
         </div>
       </div>
     </section>

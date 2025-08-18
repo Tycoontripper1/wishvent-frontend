@@ -66,7 +66,7 @@ export default function FooterSection() {
       </div>
 
       {/* Main CTA Section */}
-      <div ref={ctaRef} className="container mx-auto px-4 md:px-6 pt-16 md:pt-24 lg:pt-32 pb-16 md:pb-20 opacity-0">
+      <div ref={ctaRef} className="container mx-auto px-4 md:px-6 pt-16 md:pt-24 lg:pt-32 pb-16 md:pb-12 opacity-0">
         <div className="text-center max-w-4xl mx-auto">
           {/* Header */}
           <div className="mb-8 md:mb-12 animate-slide-down">
@@ -81,7 +81,7 @@ export default function FooterSection() {
           </div>
 
           {/* Download Button */}
-          <div className="mb-16 md:mb-20">
+          <div className="">
             <Button
               size="lg"
               className="bg-white text-lightPurple hover:bg-gray-100 px-12 md:px-16 py-6 md:py-8 text-xl md:text-2xl font-bold rounded-[8px] shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:scale-105 hover:-translate-y-1"
@@ -95,8 +95,16 @@ export default function FooterSection() {
       {/* Footer Links Section */}
       <div ref={linksRef} className="border-t border-purple-500/30 opacity-0">
         <div className="container mx-auto px-4 md:px-6 py-12 md:py-16">
+          <div className="flex md:flex-row flex-col justify-between gap-6 items-center pb-8 ">
+                      {/* Brand Logo */}
+          <div className="text-center ">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-purple-300 mb-4">
+              Wish<span className="text-white">Vent</span>
+              <span className="text-purple-200">.</span>
+            </h1>
+          </div>
           {/* Navigation Links */}
-          <div className="flex flex-wrap justify-center gap-8 md:gap-12 mb-12 md:mb-16">
+          <div className="flex flex-wrap justify-center gap-8 md:gap-12">
             {navigationLinks.map((link, index) => (
               <a
                 key={link.name}
@@ -110,7 +118,7 @@ export default function FooterSection() {
           </div>
 
           {/* Social Media Icons */}
-          <div className="flex justify-center gap-6 md:gap-8 mb-12 md:mb-16">
+          <div className="flex justify-center gap-6 md:gap-8  ">
             <SocialIcon name="Facebook">
               <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
@@ -133,17 +141,12 @@ export default function FooterSection() {
             </SocialIcon>
           </div>
 
-          {/* Brand Logo */}
-          <div className="text-center mb-12 md:mb-16">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-purple-300 mb-4">
-              Wish<span className="text-white">Vent</span>
-              <span className="text-purple-200">.</span>
-            </h1>
+
           </div>
 
           {/* Bottom Links and Copyright */}
-          <div className="border-t border-purple-500/30 pt-8 md:pt-12">
-            <div className="flex flex-col md:flex-row justify-center items-center gap-6 md:gap-8 mb-6">
+          <div className="border-t border-purple-500/30 pt-8 md:pt-6 flex md:flex-row justify-between gap-12 flex-col">
+            <div className="flex flex-row justify-center items-center gap-6 md:gap-8 mb-6">
               {footerLinks.map((link, index) => (
                 <a
                   key={link.name}

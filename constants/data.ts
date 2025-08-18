@@ -1,6 +1,9 @@
  import choose1 from "@/assets/images/choose1.png"
  import choose2 from "@/assets/images/App QR Code.png"
  import choose3 from "@/assets/images/App QR Code (1).png"
+ import birthday from "@/assets/images/birthday.png"
+ import wedding from "@/assets/images/wedding.png"
+ import christmas from "@/assets/images/christmas.png"
  
  
  
@@ -46,19 +49,42 @@ export const categories = [
   {
     id: "wedding",
     title: "Wedding Anniversary",
-    image: "/placeholder.svg?height=300&width=600",
+    image: wedding,
     alt: "Wedding couple in black and white",
   },
   {
     id: "christmas",
     title: "Christmas Celebration",
-    image: "/placeholder.svg?height=300&width=600",
+    image: christmas,
     alt: "Christmas gifts and decorations",
   },
   {
     id: "birthday",
     title: "Birthday Celebration",
-    image: "/placeholder.svg?height=300&width=600",
+    image: birthday,
     alt: "Birthday celebration with friends",
+  },
+]
+
+export const steps = [
+  {
+    number: 1,
+    title: "Register and create your wishlist",
+    isHighlighted: false,
+  },
+  {
+    number: 2,
+    title: "Customize and select items from store",
+    isHighlighted: false,
+  },
+  {
+    number: 3,
+    title: "Fill your details and share link with friends",
+    isHighlighted: true,
+  },
+  {
+    number: 4,
+    title: "Receive your gifts with joy!!",
+    isHighlighted: true,
   },
 ]
