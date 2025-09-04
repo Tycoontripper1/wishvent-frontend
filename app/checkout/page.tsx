@@ -1,53 +1,112 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { ArrowLeft, ChevronRight } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import Link from "next/link"
-import SuccessModal from "@/components/success-modal"
+import { useEffect, useState } from "react";
+import { ArrowLeft, ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import Link from "next/link";
+import SuccessModal from "@/components/success-modal";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/index";
+import Image from "next/image";
+import { DeliveryDetails } from "@/constants/interface";
 
 export default function CheckoutPage() {
-  const [paymentMethod, setPaymentMethod] = useState("flutterwave")
-  const [isProcessing, setIsProcessing] = useState(false)
-  const [showSenderInfo, setShowSenderInfo] = useState(true)
-  const [showSuccessModal, setShowSuccessModal] = useState(false)
+  const [paymentMethod, setPaymentMethod] = useState("flutterwave");
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [showSenderInfo, setShowSenderInfo] = useState(true);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [formErrors, setFormErrors] = useState({
+    fullName: "",
+    email: "",
+  });
 
-  // Form data
+  // Get cart items from Redux store
+  const cartItems = useSelector((state: RootState) => state.cart.items);
+  const cartTotal = useSelector((state: RootState) => state.cart.total);
+  const stored = localStorage.getItem("wishlistDetails");
+  const wishlistItem = stored ? JSON.parse(stored) : null;
+  console.log(wishlistItem);
+  const deliveryInfos: DeliveryDetails = wishlistItem?.deliveryDetails;
+  // useEffect(() => {
+
+  //     const prev = localStorage.getItem("wishlistItem");
+
+  //   }, []); // Only depend on specific properties
+  // Form data - Sender info starts empty and is required
   const [senderInfo, setSenderInfo] = useState({
-    fullName: "Olamide Yomi",
-    email: "olamide@gmail.com",
-  })
+    fullName: "",
+    email: "",
+  });
 
-  const [deliveryInfo, setDeliveryInfo] = useState({
+  // Delivery info is pre-filled and not editable
+  const deliveryInfo = {
     fullName: "Ayomide Bright",
     email: "ayomide@gmail.com",
     phone: "+234701093843",
     address: "05 Westhall Rd, Santa Ilorin",
-  })
+  };
 
+  // Calculate order summary based on cart data
   const orderSummary = {
-    subTotal: 23000,
+    subTotal: cartTotal,
     shippingFee: 2500,
     serviceCharge: 1000,
-    total: 26500,
-  }
+    total: cartTotal + 2500 + 1000,
+  };
+
+  // Validate form fields
+  const validateForm = () => {
+    const errors = {
+      fullName: "",
+      email: "",
+    };
+
+    let isValid = true;
+
+    if (!senderInfo.fullName.trim()) {
+      errors.fullName = "Full name is required";
+      isValid = false;
+    }
+
+    if (!senderInfo.email.trim()) {
+      errors.email = "Email is required";
+      isValid = false;
+    } else if (!/\S+@\S+\.\S+/.test(senderInfo.email)) {
+      errors.email = "Email is invalid";
+      isValid = false;
+    }
+
+    setFormErrors(errors);
+    return isValid;
+  };
 
   const handlePayment = async () => {
-    setIsProcessing(true)
+    // Validate form before processing payment
+    if (!validateForm()) {
+      return;
+    }
+
+    setIsProcessing(true);
     // Simulate payment processing
     setTimeout(() => {
-      setIsProcessing(false)
-      setShowSuccessModal(true)
-    }, 3000)
-  }
+      setIsProcessing(false);
+      setShowSuccessModal(true);
+    }, 3000);
+  };
 
   const handleModalClose = () => {
-    setShowSuccessModal(false)
+    setShowSuccessModal(false);
     // Redirect to home or order history
-    window.location.href = "/"
-  }
+    window.location.href = "/";
+  };
+
+  // Check if form is valid for enabling the payment button
+  const isFormValid =
+    senderInfo.fullName.trim() &&
+    senderInfo.email.trim() &&
+    /\S+@\S+\.\S+/.test(senderInfo.email);
 
   return (
     <div className="min-h-screen bg-white">
@@ -62,85 +121,145 @@ export default function CheckoutPage() {
       </div>
 
       <div className="px-4 py-6 space-y-6">
-        {/* Add Your Information - Collapsible */}
-        <Card className="bg-white border border-gray-200 rounded-lg">
-          <CardContent className="p-0">
-            <button
-              onClick={() => setShowSenderInfo(!showSenderInfo)}
-              className="w-full p-4 flex items-center justify-between text-left"
-            >
-              <span className="font-semibold text-gray-900">Add Your Information</span>
-              <ChevronRight
-                className={`w-5 h-5 text-gray-400 transition-transform ${showSenderInfo ? "rotate-90" : ""}`}
-              />
-            </button>
-          </CardContent>
-        </Card>
-
-        {/* Sender's Information */}
-        {showSenderInfo && (
+        {/* Order Items Summary */}
+        {cartItems.length > 0 && (
           <Card className="bg-white border border-gray-200 rounded-lg">
             <CardContent className="p-4">
-              <h3 className="font-semibold text-gray-900 mb-4">Sender's Information</h3>
+              <h3 className="font-semibold text-gray-900 mb-4">
+                Order Items ({cartItems.length})
+              </h3>
               <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
-                  <Input
-                    value={senderInfo.fullName}
-                    onChange={(e) => setSenderInfo({ ...senderInfo, fullName: e.target.value })}
-                    placeholder="Enter your full name"
-                    className="w-full"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
-                  <Input
-                    value={senderInfo.email}
-                    onChange={(e) => setSenderInfo({ ...senderInfo, email: e.target.value })}
-                    placeholder="Enter your email address"
-                    className="w-full"
-                  />
-                </div>
+                {cartItems.map((item) => (
+                  <div
+                    key={item.id}
+                    className="flex items-center space-x-3 p-2 border border-gray-100 rounded-lg"
+                  >
+                    <Image
+                      src={item.image || "/placeholder.svg"}
+                      alt={item.name}
+                      width={60}
+                      height={60}
+                      className="w-15 h-15 object-cover rounded-md"
+                    />
+                    <div className="flex-1">
+                      <h4 className="font-medium text-gray-900 text-sm">
+                        {item.name}
+                      </h4>
+                      <div className="flex justify-between items-center mt-1">
+                        <span className="text-primaryColor font-semibold">
+                          ₦{item.price.toLocaleString()}
+                        </span>
+                        <span className="text-gray-600 text-sm">
+                          Qty: {item.quantity}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </CardContent>
           </Card>
         )}
 
-        {/* Delivery Information */}
+        {/* Sender's Information (Always visible and required) */}
         <Card className="bg-white border border-gray-200 rounded-lg">
           <CardContent className="p-4">
-            <h3 className="font-semibold text-gray-900 mb-4">Delivery Information</h3>
+            <h3 className="font-semibold text-gray-900 mb-4">
+              Sender's Information <span className="text-red-500">*</span>
+            </h3>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Full Name <span className="text-red-500">*</span>
+                </label>
+                <Input
+                  value={senderInfo.fullName}
+                  onChange={(e) =>
+                    setSenderInfo({ ...senderInfo, fullName: e.target.value })
+                  }
+                  placeholder="Enter your full name"
+                  className="w-full"
+                  required
+                />
+                {formErrors.fullName && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {formErrors.fullName}
+                  </p>
+                )}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Email Address <span className="text-red-500">*</span>
+                </label>
+                <Input
+                  value={senderInfo.email}
+                  onChange={(e) =>
+                    setSenderInfo({ ...senderInfo, email: e.target.value })
+                  }
+                  placeholder="Enter your email address"
+                  className="w-full"
+                  type="email"
+                  required
+                />
+                {formErrors.email && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {formErrors.email}
+                  </p>
+                )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Delivery Information (Non-editable) */}
+        <Card className="bg-white border border-gray-200 rounded-lg">
+          <CardContent className="p-4">
+            <h3 className="font-semibold text-gray-900 mb-4">
+              Delivery Information
+            </h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Full Name
+                </label>
                 <Input
                   value={deliveryInfo.fullName}
-                  onChange={(e) => setDeliveryInfo({ ...deliveryInfo, fullName: e.target.value })}
-                  className="w-full"
+                  className="w-full bg-gray-100"
+                  readOnly
+                  disabled
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Email Address
+                </label>
                 <Input
-                  value={deliveryInfo.email}
-                  onChange={(e) => setDeliveryInfo({ ...deliveryInfo, email: e.target.value })}
-                  className="w-full"
+                  value={deliveryInfos.email}
+                  className="w-full bg-gray-100"
+                  readOnly
+                  disabled
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Phone Number
+                </label>
                 <Input
-                  value={deliveryInfo.phone}
-                  onChange={(e) => setDeliveryInfo({ ...deliveryInfo, phone: e.target.value })}
-                  className="w-full"
+                  value={deliveryInfos.phone}
+                  className="w-full bg-gray-100"
+                  readOnly
+                  disabled
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Address</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Address
+                </label>
                 <Input
-                  value={deliveryInfo.address}
-                  onChange={(e) => setDeliveryInfo({ ...deliveryInfo, address: e.target.value })}
-                  className="w-full"
+                  value={deliveryInfos.address}
+                  className="w-full bg-gray-100"
+                  readOnly
+                  disabled
                 />
               </div>
             </div>
@@ -150,7 +269,9 @@ export default function CheckoutPage() {
         {/* Payment Information */}
         <Card className="bg-white border border-gray-200 rounded-lg">
           <CardContent className="p-4">
-            <h3 className="font-semibold text-gray-900 mb-4">Payment Information</h3>
+            <h3 className="font-semibold text-gray-900 mb-4">
+              Payment Information
+            </h3>
 
             <div className="mb-6">
               <h4 className="font-medium text-gray-900 mb-3">Pay With</h4>
@@ -163,11 +284,16 @@ export default function CheckoutPage() {
                     value="flutterwave"
                     checked={paymentMethod === "flutterwave"}
                     onChange={(e) => setPaymentMethod(e.target.value)}
-                    className="text-purple-600"
+                    className="custom-radio"
                   />
-                  <label htmlFor="flutterwave" className="flex-1 flex items-center justify-between">
+                  <label
+                    htmlFor="flutterwave"
+                    className="flex-1 flex items-center justify-between"
+                  >
                     <span className="font-medium">Flutterwave</span>
-                    <div className="text-xs text-orange-600 bg-orange-100 px-2 py-1 rounded">Flutterwave</div>
+                    <div className="text-xs text-orange-600 bg-orange-100 px-2 py-1 rounded">
+                      Flutterwave
+                    </div>
                   </label>
                 </div>
 
@@ -179,7 +305,7 @@ export default function CheckoutPage() {
                     value="paystack"
                     checked={paymentMethod === "paystack"}
                     onChange={(e) => setPaymentMethod(e.target.value)}
-                    className="text-purple-600"
+                    className="custom-radio"
                   />
                   <label htmlFor="paystack" className="flex-1">
                     <span className="font-medium">Paystack</span>
@@ -219,10 +345,12 @@ export default function CheckoutPage() {
       <div className="fixed bottom-0 left-0 right-0 bg-white p-4 border-t border-gray-200">
         <Button
           onClick={handlePayment}
-          disabled={isProcessing}
-          className="w-full bg-purple-600 hover:bg-purple-700 text-white py-4 rounded-lg font-semibold text-lg"
+          disabled={isProcessing || !isFormValid}
+          className="w-full bg-primaryColor hover:bg-primaryColor/70 text-white py-4 rounded-lg font-semibold text-lg disabled:bg-gray-300 disabled:cursor-not-allowed"
         >
-          {isProcessing ? "Processing..." : "Make Payment"}
+          {isProcessing
+            ? "Processing..."
+            : `Pay ₦${orderSummary.total.toLocaleString()}.00`}
         </Button>
       </div>
 
@@ -231,6 +359,25 @@ export default function CheckoutPage() {
 
       {/* Success Modal */}
       <SuccessModal isOpen={showSuccessModal} onClose={handleModalClose} />
+
+      {/* Empty Cart State */}
+      {cartItems.length === 0 && (
+        <div className="flex flex-col items-center justify-center py-12 px-4">
+          <div className="text-center">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              Your cart is empty
+            </h3>
+            <p className="text-gray-600 mb-6">
+              Add some items to your cart before checkout
+            </p>
+            <Link href="/wishlist/details">
+              <Button className="bg-primaryColor hover:bg-purple-700 text-white">
+                Continue Shopping
+              </Button>
+            </Link>
+          </div>
+        </div>
+      )}
     </div>
-  )
+  );
 }

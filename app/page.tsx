@@ -1,11 +1,11 @@
-import Header from "@/components/header"
-import HeroSection from "@/components/hero-section"
-import AboutSection from "@/components/about-section"
-import WhyChooseUsSection from "@/components/why-choose-us-section"
-import CategoriesSection from "@/components/categories-section"
-import HowItWorksSection from "@/components/how-it-works-section"
-import FAQSection from "@/components/faq-section"
-import FooterSection from "@/components/footer-section"
+import Header from "@/components/header";
+import HeroSection from "@/components/hero-section";
+import AboutSection from "@/components/about-section";
+import WhyChooseUsSection from "@/components/why-choose-us-section";
+import CategoriesSection from "@/components/categories-section";
+import HowItWorksSection from "@/components/how-it-works-section";
+import FAQSection from "@/components/faq-section";
+import FooterSection from "@/components/footer-section";
 
 export default function HomePage() {
   return (
@@ -32,7 +32,7 @@ export default function HomePage() {
       <FAQSection />
 
       {/* Footer Section */}
-      <FooterSection />
+      {/* <FooterSection /> */}
     </main>
-  )
+  );
 }

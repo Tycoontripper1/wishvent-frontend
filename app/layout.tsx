@@ -1,26 +1,35 @@
-import type React from "react"
-import type { Metadata } from "next"
-import { Inter } from "next/font/google"
-import "./globals.css"
+import type React from "react";
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import "./globals.css";
+import FooterSection from "@/components/footer-section";
+import Providers from "@/provider"; // <-- import your wrapper
 
-const inter = Inter({ subsets: ["latin"] })
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "WishVent - Create Perfect Wishlists",
-  description: "Transform your gift-giving experience with our intuitive wishlist platform",
-    generator: 'v0.dev'
-}
+  description:
+    "Transform your gift-giving experience with our intuitive wishlist platform",
+  generator: "v0.dev",
+};
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
     <html lang="en">
-      <body className={`${inter.className} overflow-x-hidden`} suppressHydrationWarning={true}>
-        <div className="min-h-screen overflow-x-hidden">{children}</div>
+      <body
+        className={`${inter.className} overflow-x-hidden`}
+        suppressHydrationWarning={true}
+      >
+        <Providers>
+          <div className="min-h-screen overflow-x-hidden">{children}</div>
+          <FooterSection />
+        </Providers>
       </body>
     </html>
-  )
+  );
 }

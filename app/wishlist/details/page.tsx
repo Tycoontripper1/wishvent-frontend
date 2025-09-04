@@ -1,11 +1,14 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { ArrowLeft, Share2, MoreVertical, Plus, Minus } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import Image from "next/image"
-import Link from "next/link"
+import { useState } from "react";
+import { ArrowLeft, Share2, MoreVertical, Plus, Minus } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import Image from "next/image";
+import Link from "next/link";
+import { useDispatch, useSelector } from "react-redux";
+import { addItem, clearCart } from "@/store/cartSlice";
+// import { RootState } from "@/lib/redux/store";
 
 const wishlistItems = [
   {
@@ -48,16 +51,69 @@ const wishlistItems = [
     inStock: true,
     quantity: 1,
   },
-]
+];
 
 export default function WishlistDetailsPage() {
-  const [items, setItems] = useState(wishlistItems)
+  const [items, setItems] = useState(wishlistItems);
+  const dispatch = useDispatch();
+  // const cartItems = useSelector((state: RootState) => state.cart.items);
 
   const updateQuantity = (id: number, change: number) => {
-    setItems(items.map((item) => (item.id === id ? { ...item, quantity: Math.max(1, item.quantity + change) } : item)))
-  }
+    setItems(
+      items.map((item) =>
+        item.id === id
+          ? { ...item, quantity: Math.max(1, item.quantity + change) }
+          : item
+      )
+    );
+  };
 
-  const totalAmount = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
+  const handleAddToCart = (item: any) => {
+    dispatch(
+      addItem({
+        id: item.id,
+        name: item.name,
+        price: item.price,
+        image: item.image,
+        quantity: item.quantity,
+      })
+    );
+  };
+
+  const handlePurchaseItem = (item: any) => {
+    // Clear cart and add only this item for direct checkout
+    dispatch(clearCart());
+    dispatch(
+      addItem({
+        id: item.id,
+        name: item.name,
+        price: item.price,
+        image: item.image,
+        quantity: item.quantity,
+      })
+    );
+  };
+
+  const handleAddAllToCart = () => {
+    items.forEach((item) => {
+      if (item.inStock) {
+        dispatch(
+          addItem({
+            id: item.id,
+            name: item.name,
+            price: item.price,
+            image: item.image,
+            quantity: item.quantity,
+          })
+        );
+      }
+    });
+  };
+
+  const totalAmount = items.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
+  );
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -94,21 +150,31 @@ export default function WishlistDetailsPage() {
                   />
                   {!item.inStock && (
                     <div className="absolute inset-0 bg-black/50 rounded-lg flex items-center justify-center">
-                      <span className="text-white text-xs font-semibold">Out of Stock</span>
+                      <span className="text-white text-xs font-semibold">
+                        Out of Stock
+                      </span>
                     </div>
                   )}
                 </div>
 
                 <div className="flex-1">
                   <Link href={`/wishlist/item/${item.id}`}>
-                    <h3 className="font-semibold text-gray-900 mb-1">{item.name}</h3>
+                    <h3 className="font-semibold text-gray-900 mb-1">
+                      {item.name}
+                    </h3>
                   </Link>
-                  <p className="text-sm text-gray-600 mb-2">{item.description}</p>
+                  <p className="text-sm text-gray-600 mb-2">
+                    {item.description}
+                  </p>
 
                   <div className="flex items-center space-x-2 mb-2">
-                    <span className="font-bold text-purple-600">₦{item.price.toLocaleString()}</span>
+                    <span className="font-bold text-purple-600">
+                      ₦{item.price.toLocaleString()}
+                    </span>
                     {item.originalPrice > item.price && (
-                      <span className="text-sm text-gray-400 line-through">₦{item.originalPrice.toLocaleString()}</span>
+                      <span className="text-sm text-gray-400 line-through">
+                        ₦{item.originalPrice.toLocaleString()}
+                      </span>
                     )}
                   </div>
 
@@ -138,13 +204,22 @@ export default function WishlistDetailsPage() {
                       >
                         Remove
                       </Button>
-                      <Link href={`/cart?add=${item.id}`}>
+                      <Button
+                        size="sm"
+                        className="bg-purple-600 hover:bg-purple-700 text-white"
+                        disabled={!item.inStock}
+                        onClick={() => handleAddToCart(item)}
+                      >
+                        Add to Cart
+                      </Button>
+                      <Link href="/checkout">
                         <Button
                           size="sm"
-                          className="bg-purple-600 hover:bg-purple-700 text-white"
+                          className="bg-green-600 hover:bg-green-700 text-white"
                           disabled={!item.inStock}
+                          onClick={() => handlePurchaseItem(item)}
                         >
-                          Add to Cart
+                          Buy Now
                         </Button>
                       </Link>
                     </div>
@@ -159,19 +234,29 @@ export default function WishlistDetailsPage() {
       {/* Summary */}
       <div className="px-4 py-6 bg-white border-t border-gray-200">
         <div className="flex justify-between items-center mb-4">
-          <span className="text-lg font-semibold text-gray-900">Total Wishlist Value</span>
-          <span className="text-2xl font-bold text-purple-600">₦{totalAmount.toLocaleString()}</span>
+          <span className="text-lg font-semibold text-gray-900">
+            Total Wishlist Value
+          </span>
+          <span className="text-2xl font-bold text-purple-600">
+            ₦{totalAmount.toLocaleString()}
+          </span>
         </div>
 
         <div className="grid grid-cols-2 gap-3">
-          <Button variant="outline" className="border-purple-200 text-purple-600 hover:bg-purple-50 bg-transparent">
-            Share Wishlist
+          <Button
+            variant="outline"
+            className="border-purple-200 text-purple-600 hover:bg-purple-50 bg-transparent"
+          >
+            Purchase All
           </Button>
-          <Link href="/cart">
-            <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white">Add All to Cart</Button>
-          </Link>
+          <Button
+            className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+            onClick={handleAddAllToCart}
+          >
+            Add All to Cart
+          </Button>
         </div>
       </div>
     </div>
-  )
+  );
 }
