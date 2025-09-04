@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { ArrowLeft, ChevronRight } from "lucide-react";
+import { useState } from "react";
+import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -15,7 +15,6 @@ import { DeliveryDetails } from "@/constants/interface";
 export default function CheckoutPage() {
   const [paymentMethod, setPaymentMethod] = useState("flutterwave");
   const [isProcessing, setIsProcessing] = useState(false);
-  const [showSenderInfo, setShowSenderInfo] = useState(true);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [formErrors, setFormErrors] = useState({
     fullName: "",

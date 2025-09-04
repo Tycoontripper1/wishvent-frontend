@@ -6,9 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
 import Link from "next/link";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { addItem, clearCart } from "@/store/cartSlice";
-// import { RootState } from "@/lib/redux/store";
 
 const wishlistItems = [
   {

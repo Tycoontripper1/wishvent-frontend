@@ -15,10 +15,7 @@ import Link from "next/link";
 import { useGetAllWishlists } from "@/services/wishlist";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import {
-  WishlistDetails,
-  WishlistDetailsResponse,
-} from "@/constants/interface";
+import { WishlistDetails } from "@/constants/interface";
 
 export default function WishlistPage() {
   const { id } = useParams();
