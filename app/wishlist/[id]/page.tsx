@@ -25,7 +25,7 @@ export default function WishlistPage() {
 
   // Save wish when it loads
   useEffect(() => {
-    if (wishlistItem) {
+    if (typeof window !== "undefined" && wishlistItem) {
       localStorage.setItem("wishlistDetails", JSON.stringify(wishlistItem));
     }
   }, [wishlistItem]);
@@ -206,10 +206,12 @@ export default function WishlistPage() {
                       <Button
                         className="w-full sm:w-auto bg-primaryColor hover:bg-indigo-700"
                         onClick={() => {
-                          localStorage.setItem(
-                            "selectedItem",
-                            JSON.stringify(item)
-                          );
+                          if (typeof window !== "undefined") {
+                            localStorage.setItem(
+                              "selectedItem",
+                              JSON.stringify(item)
+                            );
+                          }
                         }}
                       >
                         <Link

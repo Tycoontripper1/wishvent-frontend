@@ -26,7 +26,12 @@ export default function CheckoutPage() {
   // Get cart items from Redux store
   const cartItems = useSelector((state: RootState) => state.cart.items);
   const cartTotal = useSelector((state: RootState) => state.cart.total);
-  const stored = localStorage.getItem("wishlistDetails");
+  let stored: string | null = null;
+
+  if (typeof window !== "undefined") {
+    stored = localStorage.getItem("wishlistDetails");
+  }
+
   const wishlistItem = stored ? JSON.parse(stored) : null;
   console.log(wishlistItem);
   const deliveryInfos: DeliveryDetails = wishlistItem?.deliveryDetails;
