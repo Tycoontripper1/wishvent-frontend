@@ -11,10 +11,12 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/store/index";
 import Image from "next/image";
 import { DeliveryDetails } from "@/constants/interface";
+import { useRouter } from "next/navigation";
 
 export default function CheckoutPage() {
   const [paymentMethod, setPaymentMethod] = useState("flutterwave");
   const [isProcessing, setIsProcessing] = useState(false);
+  const router = useRouter();
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [formErrors, setFormErrors] = useState({
     fullName: "",
@@ -28,12 +30,7 @@ export default function CheckoutPage() {
   const wishlistItem = stored ? JSON.parse(stored) : null;
   console.log(wishlistItem);
   const deliveryInfos: DeliveryDetails = wishlistItem?.deliveryDetails;
-  // useEffect(() => {
 
-  //     const prev = localStorage.getItem("wishlistItem");
-
-  //   }, []); // Only depend on specific properties
-  // Form data - Sender info starts empty and is required
   const [senderInfo, setSenderInfo] = useState({
     fullName: "",
     email: "",
@@ -98,7 +95,7 @@ export default function CheckoutPage() {
   const handleModalClose = () => {
     setShowSuccessModal(false);
     // Redirect to home or order history
-    window.location.href = "/";
+    router.push("/"); // Navigate to home
   };
 
   // Check if form is valid for enabling the payment button
