@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -26,28 +26,28 @@ export default function CheckoutPage() {
   // Get cart items from Redux store
   const cartItems = useSelector((state: RootState) => state.cart.items);
   const cartTotal = useSelector((state: RootState) => state.cart.total);
-  let stored: string | null = null;
 
-  if (typeof window !== "undefined") {
-    stored = localStorage.getItem("wishlistDetails");
-  }
+  // Delivery infos from localStorage (client-side only)
+  const [deliveryInfos, setDeliveryInfos] = useState<DeliveryDetails | null>(
+    null
+  );
 
-  const wishlistItem = stored ? JSON.parse(stored) : null;
-  console.log(wishlistItem);
-  const deliveryInfos: DeliveryDetails = wishlistItem?.deliveryDetails;
+  useEffect(() => {
+    const stored = localStorage.getItem("wishlistDetails");
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        setDeliveryInfos(parsed.deliveryDetails || null);
+      } catch (err) {
+        console.error("Failed to parse wishlistDetails", err);
+      }
+    }
+  }, []);
 
   const [senderInfo, setSenderInfo] = useState({
     fullName: "",
     email: "",
   });
-
-  // Delivery info is pre-filled and not editable
-  const deliveryInfo = {
-    fullName: "Ayomide Bright",
-    email: "ayomide@gmail.com",
-    phone: "+234701093843",
-    address: "05 Westhall Rd, Santa Ilorin",
-  };
 
   // Calculate order summary based on cart data
   const orderSummary = {
@@ -59,11 +59,7 @@ export default function CheckoutPage() {
 
   // Validate form fields
   const validateForm = () => {
-    const errors = {
-      fullName: "",
-      email: "",
-    };
-
+    const errors = { fullName: "", email: "" };
     let isValid = true;
 
     if (!senderInfo.fullName.trim()) {
@@ -84,13 +80,9 @@ export default function CheckoutPage() {
   };
 
   const handlePayment = async () => {
-    // Validate form before processing payment
-    if (!validateForm()) {
-      return;
-    }
+    if (!validateForm()) return;
 
     setIsProcessing(true);
-    // Simulate payment processing
     setTimeout(() => {
       setIsProcessing(false);
       setShowSuccessModal(true);
@@ -99,11 +91,9 @@ export default function CheckoutPage() {
 
   const handleModalClose = () => {
     setShowSuccessModal(false);
-    // Redirect to home or order history
-    router.push("/"); // Navigate to home
+    router.push("/");
   };
 
-  // Check if form is valid for enabling the payment button
   const isFormValid =
     senderInfo.fullName.trim() &&
     senderInfo.email.trim() &&
@@ -162,7 +152,7 @@ export default function CheckoutPage() {
           </Card>
         )}
 
-        {/* Sender's Information (Always visible and required) */}
+        {/* Sender's Information */}
         <Card className="bg-white border border-gray-200 rounded-lg">
           <CardContent className="p-4">
             <h3 className="font-semibold text-gray-900 mb-4">
@@ -212,7 +202,7 @@ export default function CheckoutPage() {
           </CardContent>
         </Card>
 
-        {/* Delivery Information (Non-editable) */}
+        {/* Delivery Information */}
         <Card className="bg-white border border-gray-200 rounded-lg">
           <CardContent className="p-4">
             <h3 className="font-semibold text-gray-900 mb-4">
@@ -224,7 +214,7 @@ export default function CheckoutPage() {
                   Full Name
                 </label>
                 <Input
-                  value={deliveryInfo.fullName}
+                  value={deliveryInfos?.fullName || ""}
                   className="w-full bg-gray-100"
                   readOnly
                   disabled
@@ -235,7 +225,7 @@ export default function CheckoutPage() {
                   Email Address
                 </label>
                 <Input
-                  value={deliveryInfos.email}
+                  value={deliveryInfos?.email || ""}
                   className="w-full bg-gray-100"
                   readOnly
                   disabled
@@ -246,7 +236,7 @@ export default function CheckoutPage() {
                   Phone Number
                 </label>
                 <Input
-                  value={deliveryInfos.phone}
+                  value={deliveryInfos?.phone || ""}
                   className="w-full bg-gray-100"
                   readOnly
                   disabled
@@ -257,7 +247,7 @@ export default function CheckoutPage() {
                   Address
                 </label>
                 <Input
-                  value={deliveryInfos.address}
+                  value={deliveryInfos?.address || ""}
                   className="w-full bg-gray-100"
                   readOnly
                   disabled
@@ -355,13 +345,10 @@ export default function CheckoutPage() {
         </Button>
       </div>
 
-      {/* Bottom spacing for fixed button */}
       <div className="h-20"></div>
 
-      {/* Success Modal */}
       <SuccessModal isOpen={showSuccessModal} onClose={handleModalClose} />
 
-      {/* Empty Cart State */}
       {cartItems.length === 0 && (
         <div className="flex flex-col items-center justify-center py-12 px-4">
           <div className="text-center">

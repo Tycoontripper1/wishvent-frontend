@@ -20,6 +20,7 @@ export interface DeliveryDetails {
   email: string;
   phone: string;
   address: string;
+  fullName: string;
 }
 
 export interface WishProduct {
