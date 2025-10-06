@@ -12,6 +12,8 @@ import { RootState } from "@/store/index";
 import Image from "next/image";
 import { DeliveryDetails } from "@/constants/interface";
 import { useRouter } from "next/navigation";
+import { sub } from "date-fns";
+import { useSeerbitPayment } from "seerbit-reactjs";
 
 export default function CheckoutPage() {
   const [paymentMethod, setPaymentMethod] = useState("flutterwave");
@@ -26,7 +28,7 @@ export default function CheckoutPage() {
   // Get cart items from Redux store
   const cartItems = useSelector((state: RootState) => state.cart.items);
   const cartTotal = useSelector((state: RootState) => state.cart.total);
-
+  const guestCart = useSelector((state: RootState) => state.guestCart.details);
   // Delivery infos from localStorage (client-side only)
   const [deliveryInfos, setDeliveryInfos] = useState<DeliveryDetails | null>(
     null
@@ -51,10 +53,18 @@ export default function CheckoutPage() {
 
   // Calculate order summary based on cart data
   const orderSummary = {
-    subTotal: cartTotal,
-    shippingFee: 2500,
-    serviceCharge: 1000,
-    total: cartTotal + 2500 + 1000,
+    // subTotal: cartTotal,
+    subTotal: guestCart?.totalAmount || cartTotal,
+    shippingFee: guestCart?.deliveryFee || "",
+    serviceCharge: guestCart?.items?.length
+      ? guestCart.items.reduce(
+          (acc, item) => acc + (item.additionalDeliveryFee || 0),
+          0
+        )
+      : 0,
+    total: guestCart
+      ? guestCart.totalAmount + guestCart.deliveryFee
+      : cartTotal,
   };
 
   // Validate form fields
@@ -88,6 +98,59 @@ export default function CheckoutPage() {
       setShowSuccessModal(true);
     }, 3000);
   };
+
+  const seerbitKey: any = "process.env.REACT_APP_PUBLIC_KEY_SEERBIT";
+  const options: any = {
+    public_key: seerbitKey,
+    amount: orderSummary.total,
+    tranref: new Date().getTime(),
+    currency: "NGN",
+    email: senderInfo.email,
+    full_name: senderInfo.fullName,
+    mobile_no: "",
+    tokenize: false, // Changed from boolean to string
+    pocketId: "",
+    vendorId: "",
+    description: "Payment for product",
+    country: "NG",
+    callbackurl: "",
+    clientappcode: "yourclientappcode",
+    customization: JSON.stringify({
+      theme: {
+        border_color: "#000000",
+        background_color: "#004C64",
+        button_color: "#0084A0",
+      },
+      payment_method: ["transfer", "account", "card", "ussd"],
+      display_fee: true,
+      display_type: "embed",
+      logo: "logo_url | base64",
+    }),
+  };
+
+  // Define the type for the close function
+  const close = () => {
+    console.log(close);
+  };
+
+  const callback = async (response: any, closeCheckout: any) => {
+    console.log(response, "Seerbit response");
+
+    if (response.message === "Successful") {
+      // await handleTransaction(response?.payments.paymentReference); // Ensure payment is passed correctly
+      // navigate("/dashboard"); // Redirect to receipt page after successful transaction
+    } else {
+      // setShowAlert(true);
+      // setAlertMessage("Transaction Failed");
+      // setTimeout(() => setShowAlert(false), 3000);
+      router.push("/checkout"); // Redirect to homepage if transaction fails
+    }
+
+    setTimeout(() => closeCheckout(), 2000);
+  };
+
+  // ts-ignore
+  const initializePayment = useSeerbitPayment(options, callback, close);
 
   const handleModalClose = () => {
     setShowSuccessModal(false);
@@ -183,7 +246,7 @@ export default function CheckoutPage() {
                   Email Address <span className="text-red-500">*</span>
                 </label>
                 <Input
-                  value={senderInfo.email}
+                  value={senderInfo?.email}
                   onChange={(e) =>
                     setSenderInfo({ ...senderInfo, email: e.target.value })
                   }
@@ -294,12 +357,12 @@ export default function CheckoutPage() {
                     id="paystack"
                     name="payment"
                     value="paystack"
-                    checked={paymentMethod === "paystack"}
+                    checked={paymentMethod === "seerbit"}
                     onChange={(e) => setPaymentMethod(e.target.value)}
                     className="custom-radio"
                   />
                   <label htmlFor="paystack" className="flex-1">
-                    <span className="font-medium">Paystack</span>
+                    <span className="font-medium">Seerbit</span>
                   </label>
                 </div>
               </div>
@@ -335,7 +398,7 @@ export default function CheckoutPage() {
       {/* Bottom Payment Button */}
       <div className="fixed bottom-0 left-0 right-0 bg-white p-4 border-t border-gray-200">
         <Button
-          onClick={handlePayment}
+          onClick={initializePayment}
           disabled={isProcessing || !isFormValid}
           className="w-full bg-primaryColor hover:bg-primaryColor/70 text-white py-4 rounded-lg font-semibold text-lg disabled:bg-gray-300 disabled:cursor-not-allowed"
         >

@@ -1,38 +1,40 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Menu, X, Search } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { useState, useEffect } from "react";
+import { Menu, X, Search } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const navigationLinks = [
-  { name: "Home", href: "#" },
+  { name: "Home", href: "/" },
   { name: "About Us", href: "#about" },
   { name: "Wishlist", href: "/wishlist" },
   { name: "How It Works", href: "#how-it-works" },
   { name: "FAQs", href: "#faq" },
-]
+];
 
 export default function Header() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [isScrolled, setIsScrolled] = useState(false)
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20)
-    }
-    window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
+      setIsScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen)
-  }
+    setIsMenuOpen(!isMenuOpen);
+  };
 
   return (
     <>
       <header
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 w-full ${
-          isScrolled ? "bg-white/95 backdrop-blur-md shadow-lg" : "bg-transparent"
+          isScrolled
+            ? "bg-white/95 backdrop-blur-md shadow-lg"
+            : "bg-transparent"
         }`}
       >
         <div className="container mx-auto px-4 md:px-6 max-w-7xl">
@@ -56,7 +58,9 @@ export default function Header() {
                   key={link.name}
                   href={link.href}
                   className={`text-sm lg:text-base font-medium transition-all duration-200 hover:scale-105 whitespace-nowrap ${
-                    isScrolled ? "text-gray-700 hover:text-primaryColor" : "text-gray-700 hover:text-purple-800"
+                    isScrolled
+                      ? "text-gray-700 hover:text-primaryColor"
+                      : "text-gray-700 hover:text-purple-800"
                   }`}
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
@@ -80,7 +84,9 @@ export default function Header() {
               {/* Search Icon */}
               <button
                 className={`p-2 rounded-lg transition-colors duration-200 flex-shrink-0 ${
-                  isScrolled ? "text-gray-700 hover:bg-gray-100" : "text-gray-700 hover:bg-white/20"
+                  isScrolled
+                    ? "text-gray-700 hover:bg-gray-100"
+                    : "text-gray-700 hover:bg-white/20"
                 }`}
                 aria-label="Search"
               >
@@ -91,7 +97,9 @@ export default function Header() {
               <button
                 onClick={toggleMenu}
                 className={`md:hidden p-2 rounded-lg transition-colors duration-200 flex-shrink-0 ${
-                  isScrolled ? "text-gray-700 hover:bg-gray-100" : "text-gray-700 hover:bg-white/20"
+                  isScrolled
+                    ? "text-gray-700 hover:bg-gray-100"
+                    : "text-gray-700 hover:bg-white/20"
                 }`}
                 aria-label="Toggle menu"
               >
@@ -109,7 +117,10 @@ export default function Header() {
         }`}
       >
         {/* Backdrop */}
-        <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={toggleMenu} />
+        <div
+          className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+          onClick={toggleMenu}
+        />
 
         {/* Menu Panel */}
         <div
@@ -121,7 +132,10 @@ export default function Header() {
             {/* Menu Header */}
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-lg font-bold text-primaryColor">Menu</h2>
-              <button onClick={toggleMenu} className="p-2 rounded-lg text-gray-500 hover:bg-gray-100">
+              <button
+                onClick={toggleMenu}
+                className="p-2 rounded-lg text-gray-500 hover:bg-gray-100"
+              >
                 <X size={18} />
               </button>
             </div>
@@ -154,5 +168,5 @@ export default function Header() {
         </div>
       </div>
     </>
-  )
+  );
 }

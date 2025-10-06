@@ -3,9 +3,10 @@ import axios from "axios";
 import {
   WishlistDetailsResponse,
   WishlistDetails,
+  GuestCartPayload,
 } from "@/constants/interface";
 
-const apiKey = "http://45.9.191.29:8007/api";
+const apiKey = "https://wishvent-backend.sterlingtech.com.ng/api";
 
 // 🔹 Fetch all wishlists (or full response with data/details/items)
 export const useGetAllWishlists = (id: string) => {
@@ -66,4 +67,21 @@ export const useGetSingleWishlist = (id: string) => {
   }, [id]);
 
   return { data, loading, error };
+};
+
+export const patchGuestCart = async (payload: GuestCartPayload) => {
+  try {
+    const response = await axios.patch(
+      `${"https://api.peoplesstore.ng/api"}/guest/cart/add`,
+      payload,
+      {
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+    return response.data;
+  } catch (err: any) {
+    throw new Error(
+      err.response?.data?.message || "Updating guest cart failed"
+    );
+  }
 };

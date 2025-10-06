@@ -20,6 +20,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { useDispatch } from "react-redux";
 import { addItem, clearCart } from "@/store/cartSlice";
+import { DeliveryDetails } from "@/constants/interface";
+import { patchGuestCart } from "@/services/wishlist";
+import { setGuestCart } from "@/store/guestCartSlice";
 
 export default function ProductDetailPage() {
   const [selectedImage, setSelectedImage] = useState(0);
@@ -85,6 +88,22 @@ export default function ProductDetailPage() {
     setLoading(false);
   }, []);
 
+  const [deliveryInfos, setDeliveryInfos] = useState<DeliveryDetails | null>(
+    null
+  );
+
+  useEffect(() => {
+    const stored = localStorage.getItem("wishlistDetails");
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        setDeliveryInfos(parsed.deliveryDetails || null);
+      } catch (err) {
+        console.error("Failed to parse wishlistDetails", err);
+      }
+    }
+  }, []);
+
   const handleAddToCart = () => {
     dispatch(
       addItem({
@@ -101,17 +120,47 @@ export default function ProductDetailPage() {
     setTimeout(() => setShowNotification(false), 3000);
   };
 
-  const handlePurchaseNow = () => {
-    dispatch(clearCart());
-    dispatch(
-      addItem({
-        id: item.id,
-        name: item.name,
-        price: item.price,
-        image: "/placeholder.svg",
-        quantity: quantity,
-      })
-    );
+  const handlePurchaseNow = async () => {
+    try {
+      // 1️⃣ Update local Redux state
+      dispatch(clearCart());
+      dispatch(
+        addItem({
+          id: item.id,
+          name: item.name,
+          price: item.price,
+          image: "/placeholder.svg",
+          quantity: quantity,
+        })
+      );
+
+      // 2️⃣ Prepare payload for backend
+      const payload = {
+        products: [
+          {
+            id: item.id,
+            quantity: quantity,
+            price: String(item.price),
+            subTotal: Number(item.price) * quantity,
+            vendorId: item.vendorId,
+            // vendorId: "9fa25a89-ccad-44e2-a75c-f6516abe3628",
+          },
+        ],
+        address: deliveryInfos?.address || "",
+        // email: deliveryInfos?.email || "",
+        email: "oayodeji27@gmail.com",
+      };
+
+      // 3️⃣ Call API
+      const res = await patchGuestCart(payload);
+      if (res?.data?.details) {
+        dispatch(setGuestCart(res.data.details));
+      }
+
+      console.log("Cart updated on backend:", res);
+    } catch (err) {
+      console.error("Purchase failed:", err);
+    }
   };
 
   const handleWishlistToggle = () => {

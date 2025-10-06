@@ -4,6 +4,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import FooterSection from "@/components/footer-section";
 import Providers from "@/provider"; // <-- import your wrapper
+import Header from "@/components/header";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -26,6 +27,7 @@ export default function RootLayout({
         suppressHydrationWarning={true}
       >
         <Providers>
+          <Header />
           <div className="min-h-screen overflow-x-hidden">{children}</div>
           <FooterSection />
         </Providers>

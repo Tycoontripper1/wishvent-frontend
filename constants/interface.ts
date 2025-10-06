@@ -60,3 +60,16 @@ export interface WishlistDetailsResponse {
     details: WishlistDetails;
   };
 }
+export interface GuestCartProduct {
+  id: string;
+  quantity: number;
+  price: string;
+  subTotal: number;
+  vendorId: string;
+}
+
+export interface GuestCartPayload {
+  products: GuestCartProduct[];
+  address: string;
+  email: string;
+}
