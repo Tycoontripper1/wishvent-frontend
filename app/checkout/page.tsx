@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -12,10 +12,38 @@ import { RootState } from "@/store/index";
 import Image from "next/image";
 import { DeliveryDetails } from "@/constants/interface";
 import { useRouter } from "next/navigation";
-import { sub } from "date-fns";
-import { useSeerbitPayment } from "seerbit-reactjs";
+
+// Separate inner component that uses the Seerbit hook (browser-only)
+function SeerbitPayButton({
+  options,
+  callback,
+  close,
+  disabled,
+  label,
+}: {
+  options: any;
+  callback: any;
+  close: any;
+  disabled: boolean;
+  label: string;
+}) {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const { useSeerbitPayment } = require("seerbit-reactjs");
+  const initializePayment = useSeerbitPayment(options, callback, close);
+  return (
+    <Button
+      onClick={initializePayment}
+      disabled={disabled}
+      className="w-full bg-primaryColor hover:bg-primaryColor/70 text-white py-4 rounded-lg font-semibold text-lg disabled:bg-gray-300 disabled:cursor-not-allowed"
+    >
+      {label}
+    </Button>
+  );
+}
 
 export default function CheckoutPage() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
   const [paymentMethod, setPaymentMethod] = useState("flutterwave");
   const [isProcessing, setIsProcessing] = useState(false);
   const router = useRouter();
@@ -149,8 +177,7 @@ export default function CheckoutPage() {
     setTimeout(() => closeCheckout(), 2000);
   };
 
-  // ts-ignore
-  const initializePayment = useSeerbitPayment(options, callback, close);
+
 
   const handleModalClose = () => {
     setShowSuccessModal(false);
@@ -397,15 +424,26 @@ export default function CheckoutPage() {
 
       {/* Bottom Payment Button */}
       <div className="fixed bottom-0 left-0 right-0 bg-white p-4 border-t border-gray-200">
-        <Button
-          onClick={initializePayment}
-          disabled={isProcessing || !isFormValid}
-          className="w-full bg-primaryColor hover:bg-primaryColor/70 text-white py-4 rounded-lg font-semibold text-lg disabled:bg-gray-300 disabled:cursor-not-allowed"
-        >
-          {isProcessing
-            ? "Processing..."
-            : `Pay ₦${orderSummary.total.toLocaleString()}.00`}
-        </Button>
+        {mounted ? (
+          <SeerbitPayButton
+            options={options}
+            callback={callback}
+            close={close}
+            disabled={isProcessing || !isFormValid}
+            label={
+              isProcessing
+                ? "Processing..."
+                : `Pay ₦${orderSummary.total.toLocaleString()}.00`
+            }
+          />
+        ) : (
+          <Button
+            disabled
+            className="w-full bg-primaryColor/50 text-white py-4 rounded-lg font-semibold text-lg"
+          >
+            Loading...
+          </Button>
+        )}
       </div>
 
       <div className="h-20"></div>
