@@ -18,7 +18,7 @@ export const useGetAllWishlists = (id: string) => {
     const fetchWishlists = async (wishlistId: string) => {
       try {
         const response = await axios.get<WishlistDetailsResponse>(
-          `${apiKey}/wishlist/${wishlistId}`,
+          `${apiKey}/event/${wishlistId}`,
           {
             headers: { "Content-Type": "application/json" },
           }
@@ -84,4 +84,40 @@ export const patchGuestCart = async (payload: GuestCartPayload) => {
       err.response?.data?.message || "Updating guest cart failed"
     );
   }
+};
+
+// ─── Gift Purchase (notify host) ─────────────────────────────────────────────
+export interface GiftPurchasePayload {
+  wishlistId: string;
+  productId: string;
+  gifterName: string;
+  gifterEmail: string;
+  gifterPhone: string;
+  message?: string;
+}
+
+export const postGiftPurchase = async (payload: GiftPurchasePayload) => {
+  const response = await axios.post(
+    `https://wishvent-backend.sterlingtech.com.ng/api/wishlist/gift`,
+    payload,
+    { headers: { "Content-Type": "application/json" } }
+  );
+  return response.data;
+};
+
+// ─── RSVP ────────────────────────────────────────────────────────────────────
+export interface RSVPPayload {
+  wishlistId: string;
+  name: string;
+  email?: string;
+  status: "confirm" | "decline";
+}
+
+export const postRSVP = async (payload: RSVPPayload) => {
+  const response = await axios.post(
+    `https://wishvent-backend.sterlingtech.com.ng/api/wishlist/rsvp`,
+    payload,
+    { headers: { "Content-Type": "application/json" } }
+  );
+  return response.data;
 };
